@@ -9,7 +9,6 @@ import ContentWrapper from "../../../components/contentWrapper/ContentWrapper";
 import UseFetch from "../../../hooks/UseFetch";
 import Genres from "../../../components/genres/Genres";
 import CircleRating from "../../../components/circleRating/CircleRating";
-import Img from "../../../components/lazyLoadImage/Img.jsx";
 import PosterFallback from "../../../assets/no-poster.png";
 import { PlayIcon } from "../PlayButton";
 import VideoPopup from "../../../components/videoPop/VideoPopup";
@@ -33,8 +32,11 @@ const DetailsBanner = ({ video, crew }) => {
     const toHoursAndMinutes = (totalMinutes) => {
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
-        return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
+        return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`;
     };
+
+    // Function to construct the HD stream URL based on TMDB movie ID
+    const constructHDStreamURL = (tmdbId) => `https://server.momuflix.cloud/playmovie.html?movieId=${tmdbId}`;
 
     return (
         <div className="detailsBanner">
@@ -43,7 +45,7 @@ const DetailsBanner = ({ video, crew }) => {
                     {!!data && (
                         <React.Fragment>
                             <div className="backdrop-img">
-                                <img src={url?.backdrop + data?.backdrop_path} />
+                                <img src={url?.backdrop + data?.backdrop_path} alt="" />
                             </div>
                             <div className="opacity-layer"></div>
                             <ContentWrapper>
@@ -52,25 +54,20 @@ const DetailsBanner = ({ video, crew }) => {
                                         {data.poster_path ? (
                                             <img
                                                 className="posterImg"
-                                                src={
-                                                    url.backdrop +
-                                                    data?.poster_path
-                                                }
+                                                src={url.backdrop + data?.poster_path}
+                                                alt=""
                                             />
                                         ) : (
                                             <img
                                                 className="posterImg"
                                                 src={PosterFallback}
+                                                alt=""
                                             />
                                         )}
                                     </div>
                                     <div className="right">
                                         <div className="title">
-                                            {`${
-                                                data.name || data.title
-                                            } (${dayjs(
-                                                data?.release_date
-                                            ).format("YYYY")})`}
+                                            {`${data.name || data.title} (${dayjs(data?.release_date).format("YYYY")})`}
                                         </div>
                                         <div className="subtitle">
                                             {data?.tagline}
@@ -80,9 +77,7 @@ const DetailsBanner = ({ video, crew }) => {
 
                                         <div className="row">
                                             <CircleRating
-                                                rating={data?.vote_average?.toFixed(
-                                                    1
-                                                )}
+                                                rating={data?.vote_average?.toFixed(1)}
                                             />
                                             <div
                                                 className="playbtn"
@@ -98,6 +93,15 @@ const DetailsBanner = ({ video, crew }) => {
                                             </div>
                                         </div>
 
+                                        {/* Updated "Watch in HD" Button with dynamic TMDB movie ID */}
+                                        <div
+                                            className="watch-in-hd-btn"
+                                            onClick={() => window.location.href = constructHDStreamURL(id)}
+                                            style={{ cursor: 'pointer', margin: '10px 0', padding: '10px', backgroundColor: '#007bff', color: 'white', textAlign: 'center', borderRadius: '5px' }}
+                                        >
+                                            Watch in HD
+                                        </div>
+
                                         <div className="overview">
                                             <div className="heading">
                                                 Overview
@@ -111,7 +115,7 @@ const DetailsBanner = ({ video, crew }) => {
                                             {data.status && (
                                                 <div className="infoItem">
                                                     <span className="text bold">
-                                                        Status:{" "}
+                                                        Status:
                                                     </span>
                                                     <span className="text">
                                                         {data?.status}
@@ -121,24 +125,20 @@ const DetailsBanner = ({ video, crew }) => {
                                             {data.release_date && (
                                                 <div className="infoItem">
                                                     <span className="text bold">
-                                                        Release Date:{" "}
+                                                        Release Date:
                                                     </span>
                                                     <span className="text">
-                                                        {dayjs(
-                                                            data.release_date
-                                                        ).format("MMM D, YYYY")}
+                                                        {dayjs(data.release_date).format("MMM D, YYYY")}
                                                     </span>
                                                 </div>
                                             )}
                                             {data.runtime && (
                                                 <div className="infoItem">
                                                     <span className="text bold">
-                                                        Runtime:{" "}
+                                                        Runtime:
                                                     </span>
                                                     <span className="text">
-                                                        {toHoursAndMinutes(
-                                                            data.runtime
-                                                        )}
+                                                        {toHoursAndMinutes(data.runtime)}
                                                     </span>
                                                 </div>
                                             )}
@@ -146,16 +146,14 @@ const DetailsBanner = ({ video, crew }) => {
 
                                         {director?.length > 0 && (
                                             <div className="info">
-                                                <span className="text bold">
-                                                    Director:{" "}
+                                                <span className="text bold
+">
+                                                    Director: 
                                                 </span>
                                                 <span className="text">
-                                                    {director?.map((d, i) => (
+                                                    {director.map((d, i) => (
                                                         <span key={i}>
-                                                            {d.name}
-                                                            {director.length -
-                                                                1 !==
-                                                                i && ", "}
+                                                            {d.name}{director.length - 1 !== i ? ", " : ""}
                                                         </span>
                                                     ))}
                                                 </span>
@@ -165,15 +163,12 @@ const DetailsBanner = ({ video, crew }) => {
                                         {writer?.length > 0 && (
                                             <div className="info">
                                                 <span className="text bold">
-                                                    Writer:{" "}
+                                                    Writer: 
                                                 </span>
                                                 <span className="text">
-                                                    {writer?.map((d, i) => (
+                                                    {writer.map((d, i) => (
                                                         <span key={i}>
-                                                            {d.name}
-                                                            {writer.length -
-                                                                1 !==
-                                                                i && ", "}
+                                                            {d.name}{writer.length - 1 !== i ? ", " : ""}
                                                         </span>
                                                     ))}
                                                 </span>
@@ -183,21 +178,14 @@ const DetailsBanner = ({ video, crew }) => {
                                         {data?.created_by?.length > 0 && (
                                             <div className="info">
                                                 <span className="text bold">
-                                                    Creator:{" "}
+                                                    Creator: 
                                                 </span>
                                                 <span className="text">
-                                                    {data?.created_by?.map(
-                                                        (d, i) => (
-                                                            <span key={i}>
-                                                                {d.name}
-                                                                {data
-                                                                    ?.created_by
-                                                                    .length -
-                                                                    1 !==
-                                                                    i && ", "}
-                                                            </span>
-                                                        )
-                                                    )}
+                                                    {data.created_by.map((d, i) => (
+                                                        <span key={i}>
+                                                            {d.name}{data.created_by.length - 1 !== i ? ", " : ""}
+                                                        </span>
+                                                    ))}
                                                 </span>
                                             </div>
                                         )}
