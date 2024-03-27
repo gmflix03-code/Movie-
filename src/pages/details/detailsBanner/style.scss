@@ -153,6 +153,21 @@
                     }
                 }
             }
+            /* Added styles for "Watch in HD" button */
+            .watch-in-hd-btn {
+                margin: 20px 0;
+                padding: 10px;
+                background-color: #007bff;
+                color: white;
+                text-align: center;
+                cursor: pointer;
+                border-radius: 5px;
+                transition: background-color 0.3s ease;
+
+                &:hover {
+                    background-color: #0056b3;
+                }
+            }
             .row {
                 display: flex;
                 align-items: center;
@@ -161,7 +176,8 @@
             }
 
             .info {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255
+, 0.1);
                 padding: 15px 0;
                 display: flex;
                 .infoItem {
